@@ -32,7 +32,7 @@ public class User {
   private String lastName;
 
   @NotBlank
-  @Size(max = 50)
+  @Size(max = 128)
   private String password;
 
   public Long getId() {

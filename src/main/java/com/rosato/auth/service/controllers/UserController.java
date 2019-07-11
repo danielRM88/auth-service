@@ -5,7 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.rosato.auth.service.models.User;
-import com.rosato.auth.service.repositories.UserRepository;
+import com.rosato.auth.service.services.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/users")
 public class UserController {
-  private UserRepository users;
+  private UserService users;
 
-  public UserController(UserRepository users) {
+  public UserController(UserService users) {
     this.users = users;
   }
 
@@ -33,7 +33,7 @@ public class UserController {
   @PostMapping("")
   @ResponseStatus(HttpStatus.CREATED)
   public User create(@Valid @RequestBody User user) {
-    User newUser = this.users.save(user);
+    User newUser = this.users.create(user);
     return newUser;
   }
 }
