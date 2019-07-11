@@ -60,7 +60,7 @@ public class UserController {
 
     String token = JWT.create().withSubject(user.getEmail())
         .withExpiresAt(new Date(System.currentTimeMillis() + JWTCreationFilter.EXPIRATION_TIME))
-        .sign(HMAC512(JWTCreationFilter.SECRET.getBytes()));
+        .sign(HMAC512(JWTCreationFilter.RESET_PASSWORD_SECRET.getBytes()));
 
     // send email
     return redirectUrl + "?token=" + token;
@@ -79,7 +79,7 @@ public class UserController {
         throw new InvalidAttributeValueException();
       }
 
-      String email = JWT.require(Algorithm.HMAC512(JWTCreationFilter.SECRET.getBytes())).build()
+      String email = JWT.require(Algorithm.HMAC512(JWTCreationFilter.RESET_PASSWORD_SECRET.getBytes())).build()
           .verify(token.replace(JWTCreationFilter.TOKEN_PREFIX, "")).getSubject();
 
       User user = this.users.findByEmail(email);

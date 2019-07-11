@@ -23,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 public class JWTCreationFilter extends UsernamePasswordAuthenticationFilter {
   public static final String SECRET = "secret-key";
+  public static final String RESET_PASSWORD_SECRET = "reset-secret-key";
   public static final long EXPIRATION_TIME = 864_000_000; // 10 days
   public static final String TOKEN_PREFIX = "Bearer ";
   public static final String HEADER_STRING = "Authorization";
