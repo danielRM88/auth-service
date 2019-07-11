@@ -26,7 +26,9 @@ public class JWTCreationFilter extends UsernamePasswordAuthenticationFilter {
   public static final long EXPIRATION_TIME = 864_000_000; // 10 days
   public static final String TOKEN_PREFIX = "Bearer ";
   public static final String HEADER_STRING = "Authorization";
-  public static final String SIGN_UP_URL = "/v1/users/";
+  public static final String SIGN_UP_URL = "/v1/users";
+  public static final String RESET_PASSWORD_URL = "/v1/users/reset-password";
+  public static final String CONFIRM_RESET_PASSWORD_URL = "/v1/users/confirm-reset-password";
 
   private AuthenticationManager authenticationManager;
 

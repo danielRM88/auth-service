@@ -30,6 +30,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public User update(User user) {
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    User newUser = this.repo.save(user);
+    return newUser;
+  }
+
+  @Override
   public List<User> findAll() {
     return repo.findAll();
   }
