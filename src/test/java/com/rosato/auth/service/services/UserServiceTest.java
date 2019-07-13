@@ -1,4 +1,4 @@
-package com.rosato.auth.service.models;
+package com.rosato.auth.service.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -6,9 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.rosato.auth.service.models.User;
 import com.rosato.auth.service.repositories.UserRepository;
-import com.rosato.auth.service.services.UserService;
-import com.rosato.auth.service.services.UserServiceImpl;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -57,6 +56,17 @@ public class UserServiceTest {
 
     User createdUser = this.userService.findByEmail(email);
     assertEquals(email, createdUser.getEmail());
+  }
+
+  @Test
+  void updatesUser() {
+    String email = "test@gmail.com";
+
+    User user = this.userService.findByEmail(email);
+    assertEquals("Daniel", user.getFirstName());
+    user.setFirstName("NewDaniel");
+    this.userService.update(user);
+    assertEquals("NewDaniel", user.getFirstName());
   }
 
   @Test

@@ -5,6 +5,8 @@ import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import java.util.Date;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.management.InvalidAttributeValueException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -17,7 +19,8 @@ import com.rosato.auth.service.models.User;
 import com.rosato.auth.service.services.UserService;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,15 +32,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/users")
 public class UserController {
+  private JavaMailSender javaMailSender;
   private UserService users;
 
-  public UserController(UserService users) {
+  public UserController(UserService users, JavaMailSender javaMailSender) {
     this.users = users;
+    this.javaMailSender = javaMailSender;
   }
 
   @GetMapping("")
-  public ResponseEntity<List<User>> index() {
-    return new ResponseEntity<>(this.users.findAll(), HttpStatus.OK);
+  public List<User> index() {
+    return this.users.findAll();
   }
 
   @PostMapping("")
@@ -48,7 +53,7 @@ public class UserController {
   }
 
   @PostMapping("/reset-password")
-  public String reset(@RequestBody ObjectNode body) throws UserNotFoundException {
+  public void reset(@RequestBody ObjectNode body) throws UserNotFoundException, MessagingException {
     String email = body.get("email").asText();
     // Url of the front end to redirect the user so that he can type new password
     String redirectUrl = body.get("redirect_url").asText();
@@ -62,8 +67,18 @@ public class UserController {
         .withExpiresAt(new Date(System.currentTimeMillis() + JWTCreationFilter.EXPIRATION_TIME))
         .sign(HMAC512(JWTCreationFilter.RESET_PASSWORD_SECRET.getBytes()));
 
-    // send email
-    return redirectUrl + "?token=" + token;
+    MimeMessage msg = javaMailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(msg, true);
+
+    helper.setTo(email);
+
+    helper.setSubject("Password Reset");
+    String link = redirectUrl + "?token=" + token;
+    String emailBody = "<h2>Reset your password by clicking in the following link</h2><a href=\"" + link
+        + "\">Reset password</a>";
+    helper.setText(emailBody, true);
+
+    javaMailSender.send(msg);
   }
 
   @PostMapping("/confirm-reset-password")
